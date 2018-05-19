@@ -5,7 +5,11 @@ module.exports = (app) => {
         console.log(`API pronta para uso na porta ${app.get('port')}`);
     };
 
-    //manda escutar na porta
-    app.listen(app.get('port'), connectionCallback)
+    app.libs.db.sequelize.sync().done( () => {
+
+        //manda escutar na porta
+        app.listen(app.get('port'), connectionCallback)
+
+    } );
 
 }
