@@ -5,13 +5,14 @@ const fs = require('fs');
 const path = require('path');
 
 const Sequelize = require('sequelize');
-const DbConfig = require('./config');
 
 //retornaremos o objeto do DB
 let db = null;
 
 module.exports = (app) => {
     if (!db) {
+
+        const DbConfig = app.libs.config;
 
         //cria a conexao com o sequelize
         const sequelize = new Sequelize(DbConfig);

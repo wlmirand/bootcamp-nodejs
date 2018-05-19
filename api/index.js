@@ -7,7 +7,9 @@ const app = express();
 
 //instancia os modulos na ordem correta
 consign()
-    .include('libs/db.js')
+    .include('libs/config.js')
+    .then('libs/db.js')
+    //.then('auth.js')
     .then('libs/middlewares.js')
     .then('routes')
     .then('libs/boot.js') //no final, roda o app com o "listen"
