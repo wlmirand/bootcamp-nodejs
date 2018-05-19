@@ -27,12 +27,15 @@ module.exports = (app) => {
 
         console.log(dir)
 
+        //le a pasta dos modelos, para criar os objetos no Sequelize de forma automatica
         fs.readdirSync(dir).forEach(file => {
             const modelDir = path.join(dir, file);
             const model = sequelize.import(modelDir);
             db.models[model.name] = model;
         });
 
+        //para cada "entidade" chama a funcao associate para fazer o "ALTER"
+        //e declarar as chaves estrangeiras e fazer os mapeamentos/associacoes
         Object.keys(db.models).forEach(key => {
             if (db.models[key].hasOwnProperty('associate')) {
                 db.models[key].associate(db.models);
