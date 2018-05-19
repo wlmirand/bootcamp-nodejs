@@ -10,11 +10,13 @@ module.exports = (app) => {
 
     const params = {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secret: config.jwtSecret
+        secretOrKey: config.jwtSecret
     };
 
     const strategy = new Strategy(params,
+
         async (payload, done) => {
+
             try {
                 const user = await Users.findById(payload.id);
 

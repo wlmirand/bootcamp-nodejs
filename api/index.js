@@ -9,7 +9,7 @@ const app = express();
 consign()
     .include('libs/config.js')
     .then('libs/db.js')
-    //.then('auth.js')
+    .then('auth.js')
     .then('libs/middlewares.js')
     .then('routes')
     .then('libs/boot.js') //no final, roda o app com o "listen"
