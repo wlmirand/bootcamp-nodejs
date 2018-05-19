@@ -1,6 +1,9 @@
 /**
  * Modulo para tratar a conexao com o DB
  */
+const fs = require('fs');
+const path = require('path');
+
 const Sequelize = require('sequelize');
 const DbConfig = require('./config');
 
@@ -17,8 +20,24 @@ module.exports = (app) => {
         db = {
             sequelize,
             Sequelize,
-            model: {}
+            models: {}
         };
+
+        const dir = path.join(__dirname + '/../', 'model');
+
+        console.log(dir)
+
+        fs.readdirSync(dir).forEach(file => {
+            const modelDir = path.join(dir, file);
+            const model = sequelize.import(modelDir);
+            db.models[model.name] = model;
+        });
+
+        Object.keys(db.models).forEach(key => {
+            if (db.models[key].hasOwnProperty('associate')) {
+                db.models[key].associate(db.models);
+            }
+        });
     }
 
     return db;

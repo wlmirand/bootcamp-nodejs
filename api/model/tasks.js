@@ -10,7 +10,7 @@ module.exports = (sequelize, DataType) => {
             autoIncrement: true
         },
         title: {
-            type: DataType.STRING,
+            type: DataType.STRING(50),
             allowNull: false,
             unique: true,
             validade: {
