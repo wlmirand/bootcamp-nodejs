@@ -1,3 +1,7 @@
+//importa somente oq precisa do validator
+const { body, validationResult } = require('express-validator/check')
+const { matchedData } = require('express-validator/filter')
+
 //Criamos um modulo para as rotas e, o consign ira fazer a injecao de dependencia
 //no caso, ele passa para nos a instancia do express.... na variavel app
 module.exports = (app) => {
@@ -8,13 +12,6 @@ module.exports = (app) => {
     /*Como temos o mesmo endpoint para GET/POST/... podemos usar route para nao repetir
         app.get  app.put no mesmo endpoint */
     app.route('/tasks')
-        //remove qualquer id passado no body, pra nao cagar os insert/updates, que sao mantidos pelo banco
-        /*
-        .all((req, res, next) => {
-            delete req.body.id;
-            next();
-        })
-        */
         .get((req, res) => {
             Tasks.findAll()
                 .then( (result) => {
@@ -24,15 +21,32 @@ module.exports = (app) => {
                     res.status(500).json(error);
                 })
         })
-        .post((req, res) => {
-            Tasks.create(req.body)
-                .then( (result) => {
-                    res.json(result);
-                })
-                .catch(error => {
-                    res.status(500).json(error);
-                });
-        });
+        .post([
+                body('title', 'Required field').exists(),
+                body('title', 'Invalid length').trim().isLength({ min: 1, max: 50 })
+            ],
+            (req, res) => {
+
+                const validationErrors = validationResult(req);
+
+                if (!validationErrors.isEmpty()) {
+                    return res.status(400).json(validationErrors.array())
+                }
+
+                /*
+                    Ao inves de chamar diretamente
+                    Tasks.create(req.body)
+                    podemos usar matchedData(req) onde o validator retorna
+                    somente o que foi validado, ignorando quaisquer valores nao validados
+                */
+                Tasks.create(matchedData(req))
+                    .then( (result) => {
+                        res.json(result);
+                    })
+                    .catch(error => {
+                        res.status(500).json(error);
+                    });
+            });
 
     app.route('/tasks/:id')
         .get((req, res) => {
